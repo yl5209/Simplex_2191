@@ -304,6 +304,7 @@ void Application::ArcBall(float a_fSensitivity)
 	{
 		DeltaMouse = static_cast<float>(CenterX - MouseX);
 		m_qArcBall = quaternion(vector3(0.0f, glm::radians(a_fSensitivity * DeltaMouse), 0.0f)) * m_qArcBall;
+		
 	}
 	else if (MouseX > CenterX)
 	{
@@ -344,8 +345,8 @@ void Application::CameraRotation(float a_fSpeed)
 	MouseY = pt.y;
 
 	//Calculate the difference in view with the angle
-	float fAngleX = 0.0f;
-	float fAngleY = 0.0f;
+	static float fAngleX = 0.0f;
+	static float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
 	if (MouseX < CenterX)
 	{
@@ -368,6 +369,19 @@ void Application::CameraRotation(float a_fSpeed)
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
+
+	/*if (fAngleX > 89.0f)
+		fAngleX = 89.0f;
+	if (fAngleX < -89.0f)
+		fAngleX = -89.0f;*/
+
+	//Calculate coordinate of direction
+	float x = cos(glm::radians(-fAngleX * 3.0f)) * cos(glm::radians(-fAngleY * 3.0f));
+	float y = sin(glm::radians(-fAngleX * 3.0f));
+	float z = cos(glm::radians(-fAngleX * 3.0f)) * sin(glm::radians(-fAngleY * 3.0f));
+
+	//normalize the vector and set target position
+	m_pCamera->SetTarget(m_pCamera->GetPosition() + glm::normalize(vector3(x, y, z)));
 	//Change the Yaw and the Pitch of the camera
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
@@ -388,8 +402,17 @@ void Application::ProcessKeyboard(void)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_pCamera->MoveForward(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCamera->MoveSideways(fSpeed);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_pCamera->MoveSideways(-fSpeed);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_pCamera->MoveVertical(fSpeed);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		m_pCamera->MoveVertical(-fSpeed);
+
 #pragma endregion
 }
 //Joystick

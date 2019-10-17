@@ -230,6 +230,8 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
+
+	void Peak(float a_fDistance = 1.0f);
 };
 
 } //namespace Simplex

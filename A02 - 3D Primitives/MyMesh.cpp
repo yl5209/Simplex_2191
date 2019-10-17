@@ -276,7 +276,30 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+
+	//Get half height
+	float l_fHalfHeight = a_fHeight / 2.0f;
+
+	//center point
+	vector3 center(vector3(0, 0, -l_fHalfHeight));
+
+	//top point
+	vector3 topPoint(vector3(0, 0, l_fHalfHeight));
+
+	//get radians
+	float l_fRadians = PI * 2 / a_nSubdivisions;
+
+	//add triangles
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point1 = vector3(cos(l_fRadians * i) * a_fRadius, sin(l_fRadians * i) * a_fRadius, -l_fHalfHeight);
+		vector3 point2 = vector3(cos(l_fRadians * (i+1)) * a_fRadius, sin(l_fRadians * (i+1)) * a_fRadius, -l_fHalfHeight);
+		AddTri(point2, point1, center);
+		AddTri(point1, point2, topPoint);
+	}
+
+	//AddTri(points[a_nSubdivisions - 1], points[0], center);
+	//AddTri(topPoint, points[a_nSubdivisions - 1], points[0]);
+
 	// -------------------------------
 
 	// Adding information about color
@@ -300,7 +323,29 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+
+	//Get half height
+	float l_fHalfHeight = a_fHeight / 2.0f;
+
+	//center point
+	vector3 center(vector3(0,0,-l_fHalfHeight));
+
+	//top point
+	vector3 topPoint(vector3(0, 0, l_fHalfHeight));
+
+	//get radians
+	float l_fRadians = PI * 2 / a_nSubdivisions;
+
+	//add triangles
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		vector3 point1 = vector3(cos(l_fRadians * i) * a_fRadius, sin(l_fRadians * i) * a_fRadius, -l_fHalfHeight);
+		vector3 point2 = vector3(cos(l_fRadians * (i + 1)) * a_fRadius, sin(l_fRadians * (i + 1)) * a_fRadius, -l_fHalfHeight);
+		vector3 point3 = vector3(cos(l_fRadians * i) * a_fRadius, sin(l_fRadians * i) * a_fRadius, l_fHalfHeight);
+		vector3 point4 = vector3(cos(l_fRadians * (i + 1)) * a_fRadius, sin(l_fRadians * (i + 1)) * a_fRadius, l_fHalfHeight);
+		AddTri(point2, point1, center);
+		AddTri(point3, point4, topPoint);
+		AddQuad(point1, point2, point3, point4);
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -330,7 +375,46 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//Get half height
+	float l_fHalfHeight = a_fHeight / 2.0f;
+
+	//center point
+	vector3 center(vector3(0, 0, -l_fHalfHeight));
+
+	//top point
+	vector3 topPoint(vector3(0, 0, l_fHalfHeight));
+
+	//get radians
+	float l_fRadians = PI * 2 / a_nSubdivisions;
+
+	//add triangles
+	for (int i = 0; i < a_nSubdivisions; i++) {
+
+		//4 points at the bottom
+		//inner
+		vector3 point1 = vector3(cos(l_fRadians * i) * a_fInnerRadius, sin(l_fRadians * i) * a_fInnerRadius, -l_fHalfHeight);
+		vector3 point2 = vector3(cos(l_fRadians * (i + 1)) * a_fInnerRadius, sin(l_fRadians * (i + 1)) * a_fInnerRadius, -l_fHalfHeight);
+		//outer
+		vector3 point3 = vector3(cos(l_fRadians * i) * a_fOuterRadius, sin(l_fRadians * i) * a_fOuterRadius, -l_fHalfHeight);
+		vector3 point4 = vector3(cos(l_fRadians * (i + 1)) * a_fOuterRadius, sin(l_fRadians * (i + 1)) * a_fOuterRadius, -l_fHalfHeight);
+
+		//4 points at the top
+		//inner
+		vector3 point5 = vector3(cos(l_fRadians * i) * a_fInnerRadius, sin(l_fRadians * i) * a_fInnerRadius, l_fHalfHeight);
+		vector3 point6 = vector3(cos(l_fRadians * (i + 1)) * a_fInnerRadius, sin(l_fRadians * (i + 1)) * a_fInnerRadius, l_fHalfHeight);
+		//outer
+		vector3 point7 = vector3(cos(l_fRadians * i) * a_fOuterRadius, sin(l_fRadians * i) * a_fOuterRadius, l_fHalfHeight);
+		vector3 point8 = vector3(cos(l_fRadians * (i + 1)) * a_fOuterRadius, sin(l_fRadians * (i + 1)) * a_fOuterRadius, l_fHalfHeight);
+
+
+		AddQuad(point3, point4, point7, point8);
+
+		AddQuad(point2, point1, point6, point5);
+
+		AddQuad(point1, point2, point3, point4);
+
+		AddQuad(point7, point8, point5, point6);
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -387,7 +471,67 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+
+	std::vector<vector3> vertices;	// list to store all the vertices of the sphere
+
+	float x, y, z, xy;
+
+	int stackCount = a_nSubdivisions * 3;
+	int sectorCount = stackCount;
+
+	float sectorStep = 2 * PI / sectorCount;
+	float stackStep = PI / stackCount;
+	float stackAngle, sectorAngle;
+
+	//Compute all points and store them into the vector
+	for (int i = 0; i <= stackCount; i++) {
+		stackAngle = PI / 2 - i * stackStep;	// from PI / 2 to -PI / 2
+		xy = a_fRadius * cosf(stackAngle);		// r * cos(u)
+		z = a_fRadius * sinf(stackAngle);		// r * sin(u)
+
+		for (int j = 0; j <= sectorCount; j++) {
+			sectorAngle = j * sectorStep;	// from 0 to 2PI
+
+			// Calculate x,y,z
+			x = xy * cosf(sectorAngle);
+			y = xy * sinf(sectorAngle);
+
+			vector3 point(x, y, z);
+			vertices.push_back(point);
+		}
+	}
+
+
+	int k1, k2;
+
+	for (int i = 0; i < stackCount; i++) {
+		k1 = i * (sectorCount + 1);		// beginning of current stack
+		k2 = k1 + (sectorCount + 1);		// beginning of the next stack
+
+		for (int j = 0; j < sectorCount; j++, ++k1, ++k2) {
+
+			vector3 v1 = vertices[k1];
+			vector3 v2 = vertices[k2];
+			vector3 v3 = vertices[k1 + 1];
+			vector3 v4 = vertices[k2 + 1];
+
+			//add top stack
+			if (i == 0) {
+				AddTri(v1, v2, v4);
+			}
+			//add bottom stack
+			else if (i == stackCount - 1) {
+				AddTri(v1, v2, v3);
+			}
+			//add middle
+			else {
+				AddQuad(v2, v4, v1, v3);
+			}
+		}
+	}
+
+	// Code of reference: http://www.songho.ca/opengl/gl_sphere.html
+
 	// -------------------------------
 
 	// Adding information about color
